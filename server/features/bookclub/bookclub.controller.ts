@@ -1,5 +1,5 @@
 import { type Context } from "hono";
-import { create, getAll, getById } from "./bookclub.queries";
+import { create, getAll, getById, join, leave, remove, setBook, update } from "./bookclub.queries";
 
 export const getAllBookclubs = async (c: Context) => {
   const allClubs = await getAll();
@@ -16,8 +16,59 @@ export const getBookclubById = async (c: Context) => {
 export const createBookclub = async (c: Context) => {
   const data = await c.req.json();
   const user = c.get('user');
-  if(!user) return c.json({ error: "Unauthorized" });
+  if(!user) return c.json({ error: "Unauthorized" }, 401);
   const newClub = await create(data, user.id);
   if (!newClub) return c.json({ error: "Error creating club" });
   return c.json({ message: "Your new bookclub was created!", newClub }, 201);
+}
+
+export const updateBookclub = async (c: Context) => {
+  const user = c.get("user");
+  const id = c.req.param("id");
+  const data = await c.req.json();
+  const updatedBookclub = await update(user.id, id, data);
+  if (!updatedBookclub) return c.json({ error: "Error updating bookclub" });
+  return c.json(updatedBookclub)
+}
+
+export const deleteBookclub = async (c: Context) => {
+  const id = c.req.param("id");
+  const deletedBookclub = await remove(id);
+  if (!deletedBookclub) return c.json({ error: "Error deleting bookclub" });
+  return c.json({ message: "Deleted bookclub", deletedBookclub })
+}
+
+export const joinBookclub = async (c: Context) => {
+  const bookclubId = c.req.param("id");
+
+  const user = c.get("user");
+  if (!user) return c.json({ error: "Not authorized" }, 401);
+
+  const membership = await join(user.id, bookclubId);
+  if (!membership) return c.json({ error: "Something went wrong joining bookclub" });
+
+  return c.json(membership);
+}
+
+export const leaveBookclub = async (c: Context) => {
+  const user = c.get("user");
+  const bookclubId = c.req.param("id");
+
+  if (!user) return c.json({ error: "Not authorized" }, 401);
+
+  const leftMembership = await leave(user.id, bookclubId);
+  return c.json({ message: "Bookclub left", leftMembership})
+}
+
+export const setCurrentBook = async (c: Context) => {
+  const user = c.get("user");
+  const bookclubId = c.req.param("id");
+  const { isbn, bookData } = await c.req.json();
+
+  if (!user) return c.json({ error: "Unauthorized" }, 401);
+
+  const updatedBookclub = await setBook(user.id, bookclubId, isbn, bookData);
+  if (!updatedBookclub) return c.json({ error: "Something went wrong with updating current book" });
+
+  return c.json({ message: "Current book set successfully", updatedBookclub })
 }

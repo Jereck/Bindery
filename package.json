@@ -1,9 +1,5 @@
 {
   "name": "bindery",
-  "workspaces":[
-    "client",
-    "server"
-  ],
   "scripts": {
     "server": "bun run --hot server/server.ts",
     "client": "cd client && bun run dev",
@@ -18,7 +14,8 @@
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "hono": "^4.9.12",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bun": "latest",

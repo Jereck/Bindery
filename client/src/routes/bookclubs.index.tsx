@@ -13,7 +13,7 @@ export const Route = createFileRoute('/bookclubs/')({
 
 function BookclubsComponent() {
   const router = useRouter()
-  const { data: session } = authClient.useSession()
+  const { data: session, isPending } = authClient.useSession()
 
   const { data, isError, error, isLoading } = useQuery({
     queryKey: ['bookclubs'],
@@ -23,6 +23,8 @@ function BookclubsComponent() {
       return res.json();
     }
   })
+
+  if (isPending) return <div>Loading...</div>
 
   if (!session) {
     router.navigate({ to: "/signin" })
