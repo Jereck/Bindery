@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { hc } from 'hono/client';
 import type { AppType } from '../../../server/app';
 import { authClient } from '@/lib/auth-client';
@@ -16,9 +16,20 @@ export const Route = createFileRoute('/bookclubs/$clubId')({
 })
 
 function RouteComponent() {
-  const { data: session } = authClient.useSession();
+  const router = useRouter();
+  const { data: session, isPending, error: authError } = authClient.useSession();
   const { clubId } = Route.useParams();
   const club = Route.useLoaderData();
+
+  if (isPending) return <p>Pending...</p>
+
+  if (authError) return <p>Error...</p>
+
+  if (!session) {
+    router.navigate({ to: "/signin" })
+    return null
+  }
+
 
   return (
     <div className="p-6">
