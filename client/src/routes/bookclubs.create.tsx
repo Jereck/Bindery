@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { AppType } from '../../../server/app';
 import { authClient } from '@/lib/auth-client';
 
-const client = hc<AppType>('/', { init: { credentials: 'include' }});
+const client = hc<AppType>('/');
 
 export const Route = createFileRoute('/bookclubs/create')({
   component: CreateBookclubComponent,
@@ -13,16 +13,19 @@ export const Route = createFileRoute('/bookclubs/create')({
 
 function CreateBookclubComponent() {
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { data: session, isPending, error: authError } = authClient.useSession();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  console.log("Session: ", session);
+  if (isPending) return <p>Pending...</p>
+
+  if (authError) return <p>Error...</p>
 
   if (!session) {
     router.navigate({ to: "/signin" })
+    return null
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,7 +67,7 @@ function CreateBookclubComponent() {
           Back to Bookclubs
         </Link>
 
-        <div className="p-8 shadow-lg border-primary/10">
+        <div className="card bg-base-200 p-8 shadow-sm">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
@@ -77,9 +80,6 @@ function CreateBookclubComponent() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="name" className="text-sm font-medium">
-                Bookclub Name
-              </label>
               <input
                 id="name"
                 type="text"
@@ -87,22 +87,19 @@ function CreateBookclubComponent() {
                 placeholder="e.g., Mystery Lovers Club"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="h-11"
+                className="input w-full"
                 disabled={loading}
               />
               <p className="text-xs text-muted-foreground">Choose a memorable name for your bookclub</p>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium">
-                Description
-              </label>
               <textarea
                 id="description"
                 placeholder="Tell others what your bookclub is about, what genres you'll read, and what makes it special..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="min-h-[120px] resize-none"
+                className="textarea w-full"
                 disabled={loading}
               />
               <p className="text-xs text-muted-foreground">Help potential members understand your bookclub's focus</p>
@@ -120,13 +117,13 @@ function CreateBookclubComponent() {
             <div className="flex gap-3 pt-2">
               <button
                 type="button"
-                className="flex-1 bg-transparent"
+                className="btn flex flex-1"
                 disabled={loading}
                 onClick={() => router.navigate({ to: "/bookclubs" })}
               >
                 Cancel
               </button>
-              <button type="submit" disabled={loading} className="flex-1 bg-primary hover:bg-primary/90">
+              <button type="submit" disabled={loading} className="btn btn-primary  flex flex-1">
                 {loading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

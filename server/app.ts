@@ -13,6 +13,7 @@ const router = app
       origin: ['http://localhost:3000', 'http://localhost:5000'],
       allowHeaders: ['Content-Type', 'Authorization'],
       allowMethods: ['POST', 'GET', 'PUT', 'DELETE', 'OPTIONS'],
+      exposeHeaders: ['Content-Length'],
       credentials: true
     })
   )
