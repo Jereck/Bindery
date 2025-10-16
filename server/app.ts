@@ -4,6 +4,7 @@ import { logger } from 'hono/logger'
 import { auth } from './lib/auth';
 import bookclubRoutes from './features/bookclub/bookclub.routes';
 import libraryRoutes from './features/library/library.routes';
+import bookRoutes from './features/book/book.routes';
 
 const app = new Hono().basePath('/api')
 
@@ -22,6 +23,7 @@ const router = app
   .on(["POST", "GET"], "/auth/**", (c) => auth.handler(c.req.raw))
   .route('/bookclubs', bookclubRoutes)
   .route('/library', libraryRoutes)
+  .route('/books', bookRoutes)
 
 
 export type AppType = typeof router;

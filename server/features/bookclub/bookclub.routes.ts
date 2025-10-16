@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { createBookclub, deleteBookclub, getAllBookclubs, getBookclubById, joinBookclub, leaveBookclub, updateBookclub } from "./bookclub.controller";
+import { createBookclub, deleteBookclub, getAllBookclubs, getBookclubById, joinBookclub, leaveBookclub, setCurrentBook, updateBookclub } from "./bookclub.controller";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 import { HonoEnv } from "../../types";
 
@@ -13,6 +13,7 @@ export const bookclubRoutes = new Hono<HonoEnv>()
   .delete('/:id', deleteBookclub)
   .post('/:id/join', joinBookclub)
   .delete('/:id/leave', leaveBookclub)
+  .post('/:id/set-book', setCurrentBook)
 
 
 export type BookclubRoutesType = typeof bookclubRoutes;

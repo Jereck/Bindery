@@ -31,6 +31,8 @@ export const addBook = async (userId: string, isbn: string, bookData: any) => {
     userLibrary = newLibrary;
   }
 
+  console.log("Book data: ", bookData);
+
   let foundBook = await findBookByISBN(isbn);
   if (!foundBook) {
     foundBook = await createBookInDb({
@@ -38,7 +40,7 @@ export const addBook = async (userId: string, isbn: string, bookData: any) => {
       authors: bookData.authors,
       isbn13: isbn,
       coverImage: bookData.coverImage,
-      publishedYear: bookData.publisehdYear ? Number(bookData.publishedYear) : null,
+      publishedYear: bookData.publishedYear ? Number(bookData.publishedYear) : null,
       description: bookData.description
     })
   }

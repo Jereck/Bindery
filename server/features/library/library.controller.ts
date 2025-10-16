@@ -14,9 +14,9 @@ export const addBookToLibrary = async (c: Context) => {
   const user = c.get('user');
   if (!user) return c.json({ error: "Unauthorized" }, 401);
 
-  const { isbn, bookData } = await c.req.json();
+  const bookData = await c.req.json();
 
-  const addedBook = await addBook(user.id, isbn, bookData);
+  const addedBook = await addBook(user.id, bookData.isbn13, bookData);
   if (!addedBook) return c.json({ error: "Error adding book to library" });
 
   return c.json(addedBook);
