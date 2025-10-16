@@ -1,16 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { hc } from 'hono/client'
 import { useQuery } from '@tanstack/react-query'
-import type { AppType } from '../../../server'
+import type { AppType } from '../../../server/app'
 import { CircleX } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 const client = hc<AppType>('/');
 
-export const Route = createFileRoute('/bookclubs')({
-  component: BookclubComponent,
+export const Route = createFileRoute('/bookclubs/')({
+  component: BookclubsComponent,
 })
 
-function BookclubComponent() {
+function BookclubsComponent() {
+  const router = useRouter()
+  const { data: session } = authClient.useSession()
+
   const { data, isError, error, isLoading } = useQuery({
     queryKey: ['bookclubs'],
     queryFn: async () => {
@@ -19,6 +23,11 @@ function BookclubComponent() {
       return res.json();
     }
   })
+
+  if (!session) {
+    router.navigate({ to: "/signin" })
+    return null
+  }
 
   return (
     <div className="flex flex-col items-center p-10">
@@ -43,7 +52,7 @@ function BookclubComponent() {
         { data && data.map((bookclub) => {
           return (
             <div key={bookclub.id} className="flex items-center gap-2">
-              <span>{ bookclub.title }</span>
+              <span>{ bookclub.name }</span>
             </div>
           )
         })}

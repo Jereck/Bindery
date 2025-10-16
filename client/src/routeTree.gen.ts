@@ -11,8 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as SigninRouteImport } from './routes/signin'
-import { Route as BookclubsRouteImport } from './routes/bookclubs'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BookclubsIndexRouteImport } from './routes/bookclubs.index'
+import { Route as BookclubsCreateRouteImport } from './routes/bookclubs.create'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -24,49 +25,64 @@ const SigninRoute = SigninRouteImport.update({
   path: '/signin',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BookclubsRoute = BookclubsRouteImport.update({
-  id: '/bookclubs',
-  path: '/bookclubs',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BookclubsIndexRoute = BookclubsIndexRouteImport.update({
+  id: '/bookclubs/',
+  path: '/bookclubs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BookclubsCreateRoute = BookclubsCreateRouteImport.update({
+  id: '/bookclubs/create',
+  path: '/bookclubs/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/bookclubs': typeof BookclubsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/bookclubs/create': typeof BookclubsCreateRoute
+  '/bookclubs': typeof BookclubsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/bookclubs': typeof BookclubsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/bookclubs/create': typeof BookclubsCreateRoute
+  '/bookclubs': typeof BookclubsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/bookclubs': typeof BookclubsRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/bookclubs/create': typeof BookclubsCreateRoute
+  '/bookclubs/': typeof BookclubsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bookclubs' | '/signin' | '/signup'
+  fullPaths: '/' | '/signin' | '/signup' | '/bookclubs/create' | '/bookclubs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bookclubs' | '/signin' | '/signup'
-  id: '__root__' | '/' | '/bookclubs' | '/signin' | '/signup'
+  to: '/' | '/signin' | '/signup' | '/bookclubs/create' | '/bookclubs'
+  id:
+    | '__root__'
+    | '/'
+    | '/signin'
+    | '/signup'
+    | '/bookclubs/create'
+    | '/bookclubs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BookclubsRoute: typeof BookclubsRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
+  BookclubsCreateRoute: typeof BookclubsCreateRoute
+  BookclubsIndexRoute: typeof BookclubsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,13 +101,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SigninRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/bookclubs': {
-      id: '/bookclubs'
-      path: '/bookclubs'
-      fullPath: '/bookclubs'
-      preLoaderRoute: typeof BookclubsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -99,14 +108,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bookclubs/': {
+      id: '/bookclubs/'
+      path: '/bookclubs'
+      fullPath: '/bookclubs'
+      preLoaderRoute: typeof BookclubsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bookclubs/create': {
+      id: '/bookclubs/create'
+      path: '/bookclubs/create'
+      fullPath: '/bookclubs/create'
+      preLoaderRoute: typeof BookclubsCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BookclubsRoute: BookclubsRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
+  BookclubsCreateRoute: BookclubsCreateRoute,
+  BookclubsIndexRoute: BookclubsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

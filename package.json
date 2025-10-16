@@ -5,7 +5,7 @@
     "server"
   ],
   "scripts": {
-    "sever": "bun run --hot server/index.ts",
+    "server": "bun run --hot server/server.ts",
     "client": "cd client && bun run dev",
     "dev": "concurrently \"bun run server\" \"bun run client\"",
     "db:up": "docker-compose up -d",
