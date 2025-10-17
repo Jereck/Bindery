@@ -2,6 +2,8 @@ import { relations } from "drizzle-orm";
 import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import library from "./library";
 import bookclubUser from "./bookclubUser";
+import discussionMessage from "./discussionMessage";
+import discussion from "./discussion";
 
 const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -21,7 +23,9 @@ const user = pgTable('user', {
 
 export const userRelations = relations(user, ({ one, many }) => ({
   bookclubs: many(bookclubUser),
-  library: one(library)
+  library: one(library),
+  discussionMessages: many(discussionMessage),
+  discussions: many(discussion)
 }))
 
 export default user;

@@ -8,3 +8,6 @@ export { default as libraryBook, libraryBookRelations, readingStatusEnum } from 
 export { default as session } from './session';
 export { default as user, userRelations } from './user';
 export { default as verification } from './verification';
+
+export { default as discussion, discussionRelations } from './discussion'
+export { default as discussionMessage, discussionMessageRelations } from './discussionMessage'

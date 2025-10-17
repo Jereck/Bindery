@@ -9,9 +9,9 @@ const bookclubUser = pgTable('bookclub_user',
     userId: text("user_id").notNull().references(() => user.id, { onDelete: 'cascade' }),
     isOwner: boolean("is_owner").default(false).notNull()
   },
-  (t) => ({
-    pk: primaryKey({ columns: [t.bookclubId, t.userId] })
-  })
+  (t) => ([
+    primaryKey({ columns: [t.bookclubId, t.userId] })
+  ])
 )
 
 export const bookclubUserRelations = relations(bookclubUser, ({ one }) => ({
