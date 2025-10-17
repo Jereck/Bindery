@@ -18,7 +18,7 @@ export const getLibrary = async (userId: string) => {
   return userLibrary;
 }
 
-export const addBook = async (userId: string, isbn: string, bookData: any) => {
+export const addBook = async (userId: string, isbn: string, bookData: any, readingStatus: "read" | "reading" | "want_to_read" = "want_to_read") => {
   let userLibrary = await db.query.library.findFirst({
     where: (lib, { eq }) => eq(lib.userId, userId)
   })
@@ -41,7 +41,9 @@ export const addBook = async (userId: string, isbn: string, bookData: any) => {
       isbn13: isbn,
       coverImage: bookData.coverImage,
       publishedYear: bookData.publishedYear ? Number(bookData.publishedYear) : null,
-      description: bookData.description
+      description: bookData.description,
+      pageCount: Number(bookData.pageCount),
+      categories: bookData.categories
     })
   }
 
@@ -49,7 +51,9 @@ export const addBook = async (userId: string, isbn: string, bookData: any) => {
 
   await db.insert(libraryBook).values({
     libraryId: userLibrary.id,
-    bookId: foundBook.id
+    bookId: foundBook.id,
+    currentPage: 0,
+    readingStatus
   })
 
   return foundBook;

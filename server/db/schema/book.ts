@@ -10,6 +10,8 @@ const book = pgTable("book", {
   coverImage: text(),
   publishedYear: integer(),
   description: text(),
+  pageCount: integer(),
+  categories: varchar(),
   createdAt: timestamp("created_at").defaultNow().notNull()
 });
 

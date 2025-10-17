@@ -9,6 +9,8 @@ export type BookData = {
   coverImage?: string | null;
   publishedYear?: number | null;
   description?: string | null;
+  pageCount?: number | null;
+  categories?: string | null;
 }
 
 export async function findBookByISBN(isbn: string) {

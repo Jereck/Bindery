@@ -29,7 +29,10 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
       );
       if (!res.ok) throw new Error("Failed to fetch from Google Books");
       const data = await res.json();
+      const items = data.items
+      console.log("Items", items)
       const info = data.items?.[0]?.volumeInfo;
+      console.log("Info: ", info);
       if (!info) throw new Error("Book not found");
 
       return {
@@ -39,6 +42,8 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
         coverImage: info.imageLinks?.thumbnail ?? null,
         publishedYear: info.publishedDate?.slice(0, 4),
         description: info.description ?? null,
+        pageCount: info.pageCount,
+        categories: info.categories?.join(", ")
       };
     },
   });

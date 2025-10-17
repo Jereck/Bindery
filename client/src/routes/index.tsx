@@ -10,7 +10,7 @@ function App() {
   const router = useRouter();
   
   if (session) {
-    router.navigate({ to: '/bookclubs' })
+    router.navigate({ to: '/dashboard' })
     return null;
   }
   

@@ -1,8 +1,7 @@
 import { Outlet, createRootRouteWithContext } from '@tanstack/react-router'
 
-import Header from '../components/Header'
-
 import type { QueryClient } from '@tanstack/react-query'
+import Navbar from '@/components/Navbar'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -11,7 +10,7 @@ interface MyRouterContext {
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   component: () => (
     <>
-      <Header />
+      <Navbar />
       <Outlet />
     </>
   ),

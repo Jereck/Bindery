@@ -32,6 +32,8 @@ export const createBook = async (c: Context) => {
     coverImage: data.coverImage,
     publishedYear: data.publishedYear ? Number(data.publishedYear) : null,
     description: data.description,
+    pageCount: data.pageCount,
+    categories: data.categories
   });
 
   return c.json(newBook);

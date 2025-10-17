@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1760543400450,
-      "tag": "0000_huge_photon",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1760549742431,
-      "tag": "0001_fat_greymalkin",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1760559312094,
-      "tag": "0002_loving_dorian_gray",
+      "when": 1760701831172,
+      "tag": "0000_smiling_archangel",
       "breakpoints": true
     }
   ]
