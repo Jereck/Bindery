@@ -7,6 +7,7 @@ export const getUserLibrary = async (c: Context) => {
 
   const userLibrary = await getLibrary(user.id);
   if (!userLibrary) return c.json({ error: "Something went wrong grabbing your library" });
+  
   return c.json(userLibrary);
 }
 
