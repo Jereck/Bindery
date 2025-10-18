@@ -47,7 +47,7 @@ function RouteComponent() {
       <h1 className="text-2xl font-bold text-center">Your Library</h1>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {library.libraryBooks.map(({ book }) => (
+        {/* {library.libraryBooks.map(({ book }) => (
           <div key={book.id} className="card bg-base-200 hover:shadow-md transition">
             <div className="card-body p-4 flex flex-col items-center text-center">
               {book.coverImage ? (
@@ -64,7 +64,7 @@ function RouteComponent() {
               <p className="text-xs text-gray-400 mt-1">{book.publishedYear ?? ''}</p>
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   )

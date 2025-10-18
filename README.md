@@ -24,3 +24,5 @@ Database ORM: Drizzle
 - [ ] Upload Profile Image (Avatar)
 - [ ] AI Book Recommendations for Users
 - [ ] AI Book Recommendatiosn for Bookclubs
+- [ ] Mobile application
+- [ ] Achievements (personal/bookclub)

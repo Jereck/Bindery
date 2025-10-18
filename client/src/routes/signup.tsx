@@ -38,7 +38,7 @@ function SignUpComponent() {
         email,
         password
       })
-      router.navigate({ to: '/bookclubs' })
+      router.navigate({ to: '/dashboard' })
     } catch (err) {
       setError('An unexpected error occured')
       console.error("Sign up failed: ", err)

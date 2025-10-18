@@ -1,5 +1,5 @@
 import { authClient } from '@/lib/auth-client';
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { hc } from 'hono/client';
 import { Award, Book, BookMarked, MessageCircle, Target, ThumbsUp, TrendingUp } from 'lucide-react'
 import type { AppType } from '../../../server/app';
@@ -24,9 +24,19 @@ function RouteComponent() {
     }
   })
 
-  if (sessionLoading || isLoading) {
+  if (sessionLoading) {
     return <div className="flex items-center justify-center h-screen text-lg">Loading...</div>
   }
+
+  if (!session) {
+    router.navigate({ to: "/signin" })
+    return null
+  }
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center h-screen text-lg">Loading...</div>
+  }
+
 
   if (isError) {
     return <p className="text-center text-red-500">Error: {error?.message ?? 'Something went wrong.'}</p>
@@ -34,11 +44,6 @@ function RouteComponent() {
 
   if (!library || 'error' in library) {
     return <p className="text-center text-gray-500">You don’t have any books in your library yet.</p>
-  }
-
-  if (!session) {
-    router.navigate({ to: "/signin" })
-    return null
   }
 
   const discussions = [
@@ -103,7 +108,7 @@ function RouteComponent() {
     },
   ]
 
-  console.log("Library", library)
+
 
   return (
     <div className="min-h-screen bg-base-100">
@@ -145,7 +150,12 @@ function RouteComponent() {
                         </div>
                       ))
                   ) : (
-                    <p>Add Book</p>
+                    <div>
+                      <p>
+                        You aren&apos;t reading any books. Check out your <Link className="link" to="/library">Library</Link> to add what
+                        you&apos;re reading.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>

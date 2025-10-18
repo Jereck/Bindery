@@ -15,7 +15,7 @@ const bookclub = pgTable("bookclub", {
 });
 
 export const bookclubRelations = relations(bookclub, ({ many, one }) => ({
-  members: many(bookclubUser),
+  members: many(bookclubUser, { relationName: 'members' }),
   discussions: many(discussion),
   owner: one(user, {
     fields: [bookclub.ownerId],

@@ -16,7 +16,7 @@ function RouteComponent() {
   const [loading, setLoading] = useState(false);
 
   if (session) {
-    router.navigate({ to: '/bookclubs' })
+    router.navigate({ to: '/dashboard' })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
