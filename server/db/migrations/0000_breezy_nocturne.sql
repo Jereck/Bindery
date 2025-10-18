@@ -36,22 +36,15 @@ CREATE TABLE "bookclub" (
 	"current_book_id" text
 );
 --> statement-breakpoint
-CREATE TABLE "bookclub_book" (
-	"bookclub_id" text NOT NULL,
-	"book_id" text NOT NULL,
-	CONSTRAINT "bookclub_book_bookclub_id_book_id_pk" PRIMARY KEY("bookclub_id","book_id")
-);
---> statement-breakpoint
 CREATE TABLE "bookclub_user" (
-	"bookclub_id" text NOT NULL,
 	"user_id" text NOT NULL,
-	"is_owner" boolean DEFAULT false NOT NULL,
+	"bookclub_id" text NOT NULL,
 	CONSTRAINT "bookclub_user_bookclub_id_user_id_pk" PRIMARY KEY("bookclub_id","user_id")
 );
 --> statement-breakpoint
 CREATE TABLE "discussion" (
 	"id" text PRIMARY KEY NOT NULL,
-	"library_id" text NOT NULL,
+	"bookclub_id" text NOT NULL,
 	"book_id" text NOT NULL,
 	"title" text NOT NULL,
 	"created_by_id" text,
@@ -68,16 +61,16 @@ CREATE TABLE "discussion_message" (
 --> statement-breakpoint
 CREATE TABLE "library" (
 	"id" text PRIMARY KEY NOT NULL,
-	"user_id" text,
-	"bookclub_id" text
+	"owner_type" varchar(20) NOT NULL,
+	"owner_id" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "library_book" (
-	"id" text PRIMARY KEY NOT NULL,
 	"library_id" text NOT NULL,
 	"book_id" text NOT NULL,
 	"currentPage" integer,
-	"readingStatus" "reading_status" NOT NULL
+	"readingStatus" "reading_status" NOT NULL,
+	CONSTRAINT "library_book_library_id_book_id_pk" PRIMARY KEY("library_id","book_id")
 );
 --> statement-breakpoint
 CREATE TABLE "session" (
@@ -114,16 +107,13 @@ CREATE TABLE "verification" (
 --> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookclub" ADD CONSTRAINT "bookclub_current_book_id_book_id_fk" FOREIGN KEY ("current_book_id") REFERENCES "public"."book"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "bookclub_book" ADD CONSTRAINT "bookclub_book_bookclub_id_bookclub_id_fk" FOREIGN KEY ("bookclub_id") REFERENCES "public"."bookclub"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "bookclub_book" ADD CONSTRAINT "bookclub_book_book_id_book_id_fk" FOREIGN KEY ("book_id") REFERENCES "public"."book"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "bookclub_user" ADD CONSTRAINT "bookclub_user_bookclub_id_bookclub_id_fk" FOREIGN KEY ("bookclub_id") REFERENCES "public"."bookclub"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bookclub_user" ADD CONSTRAINT "bookclub_user_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "discussion" ADD CONSTRAINT "discussion_library_id_library_book_id_fk" FOREIGN KEY ("library_id") REFERENCES "public"."library_book"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "bookclub_user" ADD CONSTRAINT "bookclub_user_bookclub_id_bookclub_id_fk" FOREIGN KEY ("bookclub_id") REFERENCES "public"."bookclub"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "discussion" ADD CONSTRAINT "discussion_bookclub_id_bookclub_id_fk" FOREIGN KEY ("bookclub_id") REFERENCES "public"."bookclub"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "discussion" ADD CONSTRAINT "discussion_book_id_book_id_fk" FOREIGN KEY ("book_id") REFERENCES "public"."book"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "discussion" ADD CONSTRAINT "discussion_created_by_id_user_id_fk" FOREIGN KEY ("created_by_id") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "discussion_message" ADD CONSTRAINT "discussion_message_discussion_id_discussion_id_fk" FOREIGN KEY ("discussion_id") REFERENCES "public"."discussion"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "discussion_message" ADD CONSTRAINT "discussion_message_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "library" ADD CONSTRAINT "library_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "library" ADD CONSTRAINT "library_bookclub_id_bookclub_id_fk" FOREIGN KEY ("bookclub_id") REFERENCES "public"."bookclub"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "library_book" ADD CONSTRAINT "library_book_library_id_library_id_fk" FOREIGN KEY ("library_id") REFERENCES "public"."library"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "library_book" ADD CONSTRAINT "library_book_book_id_book_id_fk" FOREIGN KEY ("book_id") REFERENCES "public"."book"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;

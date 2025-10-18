@@ -8,18 +8,18 @@ export const readingStatusEnum = pgEnum('reading_status', ['read', 'reading', 'w
 
 export const libraryBook = pgTable('library_book', 
   {
-    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
     libraryId: text('library_id').notNull().references(() => library.id, { onDelete: 'cascade' }),
     bookId: text("book_id").notNull().references(() => book.id, { onDelete: 'cascade' }),
     currentPage: integer(),
     readingStatus: readingStatusEnum().notNull()
-  }
+  }, (t) => ([
+    primaryKey({ columns: [t.libraryId, t.bookId]})
+  ])
 )
 
 export const libraryBookRelations = relations(libraryBook, ({ one, many }) => ({
   library: one(library, { fields: [libraryBook.libraryId], references: [library.id] }),
   book: one(book, { fields: [libraryBook.bookId], references: [book.id] }),
-  discussions: many(discussion)
 }));
 
 export default libraryBook;

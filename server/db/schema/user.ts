@@ -23,9 +23,11 @@ const user = pgTable('user', {
 
 export const userRelations = relations(user, ({ one, many }) => ({
   bookclubs: many(bookclubUser),
-  library: one(library),
-  discussionMessages: many(discussionMessage),
-  discussions: many(discussion)
+  messages: many(discussionMessage),
+  library: one(library, {
+    fields: [user.id],
+    references: [library.ownerId]
+  })
 }))
 
 export default user;

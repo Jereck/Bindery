@@ -32,8 +32,6 @@ function RouteComponent() {
     return <p className="text-center text-red-500">Error: {error?.message ?? 'Something went wrong.'}</p>
   }
 
-  console.log("Library: ", library)
-
   if (!library || 'error' in library) {
     return <p className="text-center text-gray-500">You don’t have any books in your library yet.</p>
   }
@@ -105,6 +103,8 @@ function RouteComponent() {
     },
   ]
 
+  console.log("Library", library)
+
   return (
     <div className="min-h-screen bg-base-100">
       <main className="container mx-auto px-4 py-8 max-w-7xl">
@@ -118,25 +118,35 @@ function RouteComponent() {
                   <button className="btn btn-ghost btn-sm">View All</button>
                 </div>
                 <div className="space-y-4">
-                  { library.libraryBooks.map((book) => book.readingStatus === 'reading' && (
-                    <div key={book.book.id} className="flex gap-4 p-4 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
-                      <img className={`w-16 h-24 rounded-md bg-gradient-to-br flex-shrink-0 shadow-md`} src={book.book.coverImage!} />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-base mb-1 truncate">{book.book.title}</h3>
-                        <p className="text-sm opacity-70 mb-3">{book.book.authors}</p>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="opacity-70">
-                              {book.currentPage} of {book.book.pageCount} pages
-                            </span>
+                  {library.library ? (
+                    library.library.books
+                      ?.filter((book) => book.readingStatus === 'reading')
+                      .map((book) => (
+                        <div key={book.book.id} className="flex gap-4 p-4 rounded-lg bg-base-200/50 hover:bg-base-200 transition-colors">
+                          <img
+                            className="w-16 h-24 rounded-md bg-gradient-to-br flex-shrink-0 shadow-md"
+                            src={book.book.coverImage!}
+                            alt={book.book.title}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-base mb-1 truncate">{book.book.title}</h3>
+                            <p className="text-sm opacity-70 mb-3">{book.book.authors}</p>
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="opacity-70">
+                                  {book.currentPage} of {book.book.pageCount} pages
+                                </span>
+                              </div>
+                            </div>
                           </div>
+                          <button className="btn btn-outline btn-sm self-start">
+                            <BookMarked className="h-4 w-4" />
+                          </button>
                         </div>
-                      </div>
-                      <button className="btn btn-outline btn-sm self-start">
-                        <BookMarked className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
+                      ))
+                  ) : (
+                    <p>Add Book</p>
+                  )}
                 </div>
               </div>
             </div>

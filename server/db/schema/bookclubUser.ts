@@ -5,9 +5,8 @@ import { relations } from "drizzle-orm";
 
 const bookclubUser = pgTable('bookclub_user', 
   {
-    bookclubId: text("bookclub_id").notNull().references(() => bookclub.id, { onDelete: 'cascade' }),
     userId: text("user_id").notNull().references(() => user.id, { onDelete: 'cascade' }),
-    isOwner: boolean("is_owner").default(false).notNull()
+    bookclubId: text("bookclub_id").notNull().references(() => bookclub.id, { onDelete: 'cascade' }),
   },
   (t) => ([
     primaryKey({ columns: [t.bookclubId, t.userId] })
@@ -15,14 +14,8 @@ const bookclubUser = pgTable('bookclub_user',
 )
 
 export const bookclubUserRelations = relations(bookclubUser, ({ one }) => ({
-  user: one(user, {
-    fields: [bookclubUser.userId],
-    references: [user.id]
-  }),
-  bookclub: one(bookclub, {
-    fields: [bookclubUser.bookclubId],
-    references: [bookclub.id]
-  })
-}))
+  user: one(user, { fields: [bookclubUser.userId], references: [user.id] }),
+  bookclub: one(bookclub, { fields: [bookclubUser.bookclubId], references: [bookclub.id] }),
+}));
 
 export default bookclubUser;

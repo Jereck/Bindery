@@ -19,24 +19,25 @@ export const getById = async (id: string) => {
 export const create = async (club: CreateBookclubInput, userId: string) => {
   const [newClub] = await db.insert(bookclub).values({
     name: club.name,
-    description: club.description
+    description: club.description,
+    ownerId: userId
   }).returning();
 
   if (!newClub) return null;
 
-  await db.insert(bookclubUser).values({ userId: userId, bookclubId: newClub.id, isOwner: true });
+  await db.insert(bookclubUser).values({ userId: userId, bookclubId: newClub.id });
 
   return newClub;
 }
 
 export const update = async (userId: string, clubId: string, updateClub: UpdateBookclubInput) => {
-  const ownership = await db.query.bookclubUser.findFirst({
-    where: (bcu, { and, eq }) => and(eq(bcu.userId, userId), eq(bcu.bookclubId, clubId), eq(bcu.isOwner, true))
-  });
+  const foundBookclub = await db.query.bookclub.findFirst({
+    where: (bookclub, { and, eq }) => and(eq(bookclub.id, clubId), eq(bookclub.ownerId, userId))
+  })
 
-  if (!ownership) return null;
+  if (!foundBookclub) return null;
 
-  const [updatedBookcub] = await db
+  const [updatedBookclub] = await db
     .update(bookclub)
     .set({
       name: updateClub.name,
@@ -45,9 +46,7 @@ export const update = async (userId: string, clubId: string, updateClub: UpdateB
     .where(eq(bookclub.id, clubId))
     .returning();
 
-  if (!updatedBookcub) return null;
-
-  return updatedBookcub;
+  return updatedBookclub ?? null;
 }
 
 export const remove = async (clubId: string) => {
@@ -65,8 +64,7 @@ export const join = async (userId: string, clubId: string) => {
 
   const [membership] = await db.insert(bookclubUser).values({
     userId: userId,
-    bookclubId: clubId,
-    isOwner: false
+    bookclubId: clubId
   }).returning();
 
   return membership;
@@ -78,7 +76,7 @@ export const leave = async (userId: string, clubId: string) => {
   })
 
   if (!existing) return null;
-  if (existing.isOwner) {
+  if (existing.userId === userId) {
     const deletedClub = await db.delete(bookclub).where(eq(bookclub.id, clubId));
     return { message: "Club deleted", deletedClub }
   }
@@ -89,11 +87,11 @@ export const leave = async (userId: string, clubId: string) => {
 }
 
 export const setBook = async (userId: string, clubId: string, isbn: string, bookData: any) => {
-  const ownership = await db.query.bookclubUser.findFirst({
-    where: (bcu, { and, eq }) => and(eq(bcu.userId, userId), eq(bcu.bookclubId, clubId), eq(bcu.isOwner, true))
-  });
+  const foundBookclub = await db.query.bookclub.findFirst({
+    where: (bookclub, { and, eq }) => and(eq(bookclub.id, clubId), eq(bookclub.ownerId, userId))
+  })
 
-  if (!ownership) return null;
+  if (!foundBookclub) return null;
 
   let foundBook = await findBookByISBN(isbn);
   if (!foundBook) {
@@ -113,6 +111,5 @@ export const setBook = async (userId: string, clubId: string, isbn: string, book
     .where(eq(bookclub.id, clubId))
     .returning()
 
-  if (!updatedBook) return null;
-  return updatedBook;
+  return updatedBook ?? null;
 }
