@@ -1,7 +1,7 @@
 import { authClient } from '@/lib/auth-client'
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { useState } from 'react';
-import { CircleX, KeyRound, Mail, User } from 'lucide-react'
+import { CircleX, KeyRound, Mail, User, Image } from 'lucide-react'
 
 export const Route = createFileRoute('/signup')({
   component: SignUpComponent,
@@ -14,11 +14,17 @@ function SignUpComponent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState(''); 
+  const [avatar, setAvatar] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   if (session) {
     router.navigate({ to: '/bookclubs' })
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) setAvatar(file)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,11 +39,32 @@ function SignUpComponent() {
     setLoading(true);
 
     try {
-      await authClient.signUp.email({
-        name,
-        email,
-        password
+      await authClient.signUp.email({ name, email, password })
+
+      let avatarUrl: string | null = null;
+
+      if (avatar) {
+        const res = await fetch ('/api/upload-avatar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: avatar.name, contentType: avatar.type })
+        })
+        const { uploadUrl, publicUrl } = await res.json();
+
+        await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: avatar
+        })
+
+        avatarUrl = publicUrl
+      }
+
+
+      await authClient.updateUser({
+        image: avatarUrl || 'https://i.pravatar.cc/300'
       })
+
       router.navigate({ to: '/dashboard' })
     } catch (err) {
       setError('An unexpected error occured')
@@ -133,6 +160,17 @@ function SignUpComponent() {
                 Must be more than 8 characters, including
                 <br />At least one number <br />At least one lowercase letter <br />At least one uppercase letter
               </p>
+            </div>
+
+            <div className="mt-3">
+              <label className="input">
+                <Image />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                />
+              </label>
             </div>
 
             <div className="card-actions mt-3">

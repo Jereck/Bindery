@@ -47,13 +47,12 @@ function RouteComponent() {
     return <p className="text-center text-gray-500">You don’t have any books in your library yet.</p>
   }
 
-  console.log("library", library)
-
   const openSearchModal = () => {
     const modal = document.getElementById("search_modal") as HTMLDialogElement | null
     modal?.showModal()
   }
 
+  console.log("library: ", library)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FFF8F0] to-[#F5E6D3]">
@@ -68,9 +67,9 @@ function RouteComponent() {
               <div>
                 <h1 className="text-3xl font-bold text-[#2C1810]">My Library</h1>
                 <p className="text-gray-600 mt-1">
-                  {library && "library" in library
+                  {/* {library && "library" in library
                     ? `${library.library.books.length} ${library.library.books.length === 1 ? "book" : "books"} in your collection`
-                    : "Your personal book collection"}
+                    : "Your personal book collection"} */}
                 </p>
               </div>
             </div>
@@ -104,7 +103,7 @@ function RouteComponent() {
         )}
 
         {/* Empty State */}
-        {!isLoading && library && "library" in library && library.library.books.length === 0 && (
+        {!isLoading && library && "library" in library && library.library === null && (
           <div className="bg-white rounded-2xl shadow-sm border border-[#D4A574]/20 p-12 text-center">
             <div className="max-w-md mx-auto">
               <div className="w-20 h-20 bg-[#FFF8F0] rounded-full flex items-center justify-center mx-auto mb-4">
@@ -124,7 +123,7 @@ function RouteComponent() {
         )}
 
         {/* Books Grid */}
-        {!isLoading && library && "library" in library && library.library.books.length > 0 && (
+        {!isLoading && library && "library" in library && library.library !== null && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {library.library.books.map((book) => (
               <div
