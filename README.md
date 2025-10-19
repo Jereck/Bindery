@@ -3,6 +3,11 @@ Bindery is built with the inspiration of making bookclubs a more accessible opti
 of trying to find a book that both myself and my girlfriend can enjoy, Bindery aims to help bookclubs big and small
 explore new books, find common ground amoung readers of various tastes, and so much more.
 
+![Bun](https://img.shields.io/badge/Bun-1.1.0-black?logo=bun)
+![React](https://img.shields.io/badge/React-18.3-blue?logo=react)
+![Vite](https://img.shields.io/badge/Vite-5-purple?logo=vite)
+![Hono](https://img.shields.io/badge/Hono-Backend-orange)
+
 ## Features
 - User account creation + social auth
 - Create your own bookclub (private or public)
