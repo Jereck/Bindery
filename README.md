@@ -25,8 +25,26 @@ Database: Postgresql
 Database ORM: Drizzle
 
 ### In the Works
-- [ ] Upload Bookclub Image (Avatar)
-- [ ] Upload Profile Image (Avatar)
+Bookclub
+- [ ] Upload Bookclub Image (Avatar) stored in S3 bucket
+- [ ] Add Tags (ex. "Fiction", "True Crime", etc.)
+- [ ] Add Private/Public setting for clubs
+- [ ] Update current book (reading goal, current page)
+- [ ] Discussion and messages system
+- [ ] Searching feature for public clubs (filter options)
+- [ ] Invite users for private clubs
+- [ ] Owner/Admin can accept/decline public users
+- [ ] Owner/admin settings for bookclubs
+
+Calendar
+- [ ] Simple calendar system for setting bookclub reading goals (ex: page 230 by 12/12/25)
+
+User/Profile
+- [x] Upload Profile Image (Avatar) stored in S3 bucket
+- [ ] Set Reading Goal
+- [ ] Manage settings (username, reset password, etc.)
+
+Future Features
 - [ ] AI Book Recommendations for Users
 - [ ] AI Book Recommendatiosn for Bookclubs
 - [ ] Mobile application

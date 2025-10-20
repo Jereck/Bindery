@@ -3,7 +3,6 @@ import book from "./book";
 import { relations } from "drizzle-orm";
 import bookclubUser from "./bookclubUser";
 import discussion from "./discussion";
-import library from "./library";
 import user from "./user";
 
 const bookclub = pgTable("bookclub", {

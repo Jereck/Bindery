@@ -15,38 +15,51 @@ type SearchBookMode = "bookclub" | "library"
 const client = hc<AppType>("/")
 
 export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
-  const [isbn, setIsbn] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
   const [showSuccess, setShowSuccess] = useState(false)
 
   const {
-    data: book,
+    data: books,
     isFetching,
     isError,
     refetch,
     error,
   } = useQuery({
-    queryKey: ["book-search", isbn],
+    queryKey: ["book-search", searchTerm],
     enabled: false,
     queryFn: async () => {
-      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`)
+      const isISBN = /^[0-9\-]+$/.test(searchTerm.trim());
+      const query = isISBN
+        ? `isbn:${searchTerm.replace(/[^0-9]/g, "")}`
+        : `intitle:${encodeURIComponent(searchTerm.trim())}`;
+
+      const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`)
       if (!res.ok) throw new Error("Failed to fetch from Google Books")
       const data = await res.json()
-      const items = data.items
-      console.log("Items", items)
-      const info = data.items?.[0]?.volumeInfo
-      console.log("Info: ", info)
-      if (!info) throw new Error("Book not found")
 
-      return {
-        title: info.title,
-        authors: info.authors?.join(", "),
-        isbn13: isbn.replace(/[^0-9]/g, ""),
-        coverImage: info.imageLinks?.thumbnail ?? null,
-        publishedYear: info.publishedDate?.slice(0, 4),
-        description: info.description ?? null,
-        pageCount: info.pageCount,
-        categories: info.categories?.join(", "),
-      }
+      if (!data.items || data.items.length === 0) throw new Error("No books found");
+
+      const filtered = data.items.map((item: any) => {
+        const info = item.volumeInfo;
+        const industryId = info.industryIdentifiers?.find((id: any) => id.type === "ISBN_13")?.identifier;
+
+        if (!industryId || !info.title) return null;
+        return {
+          id: item.id,
+          title: info.title,
+          authors: info.authors?.join(", "),
+          isbn13: industryId ?? null,
+          coverImage: info.imageLinks?.thumbnail ?? null,
+          publishedYear: info.publishedDate?.slice(0, 4),
+          description: info.description ?? null,
+          pageCount: info.pageCount,
+          categories: info.categories.join(", ")
+        }
+      })
+      .filter(Boolean);
+
+      if (filtered.length === 0) throw new Error("No valid books with ISBN13 found");
+      return filtered;
     },
   })
 
@@ -86,14 +99,14 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
 
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault()
-    if (!isbn.trim()) return
+    if (!searchTerm.trim()) return
     refetch()
   }
 
-  const handleSubmit = async () => {
-    if (!book) return
+  const handleSubmit = async (bookData: any) => {
+    console.log("Book Data: ", bookData)
     try {
-      const saved = await addBook.mutateAsync(book)
+      const saved = await addBook.mutateAsync(bookData)
       if (mode === "bookclub") {
         await setCurrentBook.mutateAsync(saved)
       } else {
@@ -102,9 +115,8 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
       setShowSuccess(true)
       setTimeout(() => {
         setShowSuccess(false)
-        setIsbn("")
-        // Close modal
-        ;(document.getElementById("search_modal") as HTMLDialogElement)?.close()
+        setSearchTerm("")
+          ; (document.getElementById("search_modal") as HTMLDialogElement)?.close()
       }, 2000)
     } catch (err) {
       console.error(err)
@@ -123,7 +135,7 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
               <h3 className="font-semibold text-lg">
                 {mode === "bookclub" ? "Set Book for Bookclub" : "Add to Your Library"}
               </h3>
-              <p className="text-sm text-base-content/60">Search by ISBN to find your book</p>
+              <p className="text-sm text-base-content/60">Search by ISBN or Title to find your book</p>
             </div>
           </div>
           <form method="dialog">
@@ -138,13 +150,13 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
             </label>
             <div className="join w-full">
               <input
-                value={isbn}
-                onChange={(e) => setIsbn(e.target.value)}
-                placeholder="Enter ISBN (e.g., 9780143127741)"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Enter ISBN (e.g., 9780143127741 or 'Harry Potter')"
                 className="input input-bordered join-item flex-1"
                 disabled={isFetching}
               />
-              <button type="submit" className="btn btn-primary join-item" disabled={isFetching || !isbn.trim()}>
+              <button type="submit" className="btn btn-primary join-item" disabled={isFetching || !searchTerm.trim()}>
                 {isFetching ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -168,60 +180,62 @@ export default function SearchBook({ mode, bookclubId }: SearchBookProps) {
           </div>
         )}
 
-        {book && (
-          <div className="mt-6 card bg-base-200 shadow-sm">
-            <div className="card-body">
-              <div className="flex gap-4">
-                {book.coverImage && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={book.coverImage || "/placeholder.svg"}
-                      alt={book.title}
-                      className="w-24 h-36 object-cover rounded-lg shadow-md"
-                    />
-                  </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-semibold text-lg leading-tight mb-1">{book.title}</h4>
-                  <p className="text-sm text-base-content/70 mb-2">{book.authors}</p>
-                  <div className="flex flex-wrap gap-2 text-xs text-base-content/60">
-                    {book.publishedYear && <span className="badge badge-outline">Published {book.publishedYear}</span>}
-                    {book.pageCount && <span className="badge badge-outline">{book.pageCount} pages</span>}
-                    {book.categories && <span className="badge badge-outline">{book.categories}</span>}
-                  </div>
-                </div>
-              </div>
-
-              {book.description && (
-                <div className="mt-4 pt-4 border-t border-base-300">
-                  <p className="text-sm text-base-content/80 line-clamp-4 leading-relaxed">{book.description}</p>
-                </div>
-              )}
-
-              <div className="card-actions justify-end mt-4">
-                {showSuccess ? (
-                  <button className="btn btn-success btn-block" disabled>
-                    <CheckCircle2 className="w-5 h-5" />
-                    {mode === "bookclub" ? "Book Set Successfully!" : "Added to Library!"}
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-primary btn-block"
-                    onClick={handleSubmit}
-                    disabled={addBook.isPending || addToLibrary.isPending || setCurrentBook.isPending}
-                  >
-                    {addBook.isPending || addToLibrary.isPending || setCurrentBook.isPending ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>{mode === "bookclub" ? "Set as Current Book" : "Add to Library"}</>
+        {books && (
+          <div className="mt-6 space-y-4 max-h-[500px] overflow-y-auto">
+            {books.map((book: any) => (
+              <div key={book.id} className="card bg-base-200 shadow-sm">
+                <div className="card-body">
+                  <div className="flex gap-4">
+                    {book.coverImage && (
+                      <img
+                        src={book.coverImage}
+                        alt={book.title}
+                        className="w-24 h-36 object-cover rounded-lg shadow-md"
+                      />
                     )}
-                  </button>
-                )}
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lg mb-1">{book.title}</h4>
+                      <p className="text-sm text-base-content/70 mb-2">{book.authors}</p>
+                      <div className="flex flex-wrap gap-2 text-xs text-base-content/60">
+                        {book.publishedYear && (
+                          <span className="badge badge-outline">Published {book.publishedYear}</span>
+                        )}
+                        {book.pageCount && (
+                          <span className="badge badge-outline">{book.pageCount} pages</span>
+                        )}
+                        {book.categories && (
+                          <span className="badge badge-outline">{book.categories}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {book.description && (
+                    <div className="mt-4 pt-4 border-t border-base-300">
+                      <p className="text-sm text-base-content/80 line-clamp-3">
+                        {book.description}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="card-actions justify-end mt-4">
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleSubmit(book)}
+                      disabled={addBook.isPending || addToLibrary.isPending || setCurrentBook.isPending}
+                    >
+                      {addBook.isPending || addToLibrary.isPending || setCurrentBook.isPending ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" /> Saving...
+                        </>
+                      ) : (
+                        <>{mode === "bookclub" ? "Set as Current Book" : "Add to Library"}</>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
           </div>
         )}
 

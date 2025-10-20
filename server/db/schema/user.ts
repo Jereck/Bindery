@@ -3,7 +3,6 @@ import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
 import library from "./library";
 import bookclubUser from "./bookclubUser";
 import discussionMessage from "./discussionMessage";
-import discussion from "./discussion";
 
 const user = pgTable('user', {
   id: text('id').primaryKey(),

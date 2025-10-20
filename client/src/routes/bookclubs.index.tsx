@@ -43,11 +43,8 @@ function BookclubsComponent() {
         </div>
       )}
 
-      <button className="btn mb-3" onClick={() => {
-        const modal = document.getElementById("search_modal") as HTMLDialogElement | null
-        modal?.showModal()
-      }}>Search</button>
-      <SearchBook mode='library' />
+      <button className="btn mb-3" onClick={() => router.navigate({ to: '/bookclubs/create' })}>Create Bookclub</button>
+
 
       <div className="space-y-3">
         {isLoading && (
