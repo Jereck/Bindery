@@ -6,6 +6,7 @@ import bookclubRoutes from './features/bookclub/bookclub.routes';
 import libraryRoutes from './features/library/library.routes';
 import bookRoutes from './features/book/book.routes';
 import uploadAvatarRoute from './features/aws/upload-avatar';
+import uploadBCAvatarRoute from './features/aws/upload-bookclub-image';
 
 const app = new Hono().basePath('/api')
 
@@ -27,6 +28,7 @@ const router = app
   .route('/library', libraryRoutes)
   .route('/books', bookRoutes)
   .route('/upload-avatar', uploadAvatarRoute)
+  .route('/upload-bc-avatar', uploadBCAvatarRoute)
 
 
 export type AppType = typeof router;

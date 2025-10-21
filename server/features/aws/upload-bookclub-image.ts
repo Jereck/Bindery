@@ -1,8 +1,8 @@
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { type Context, Hono } from "hono";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { HonoEnv } from "../../types";
 import { authMiddleware } from "../../middlewares/auth.middleware";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION || 'us-east-1',
@@ -12,7 +12,7 @@ const s3 = new S3Client({
   }
 })
 
-export const uploadAvatarRoute = new Hono<HonoEnv>()
+export const uploadBCAvatarRoute = new Hono<HonoEnv>()
   .use(authMiddleware)
   .post('/', async (c: Context) => {
     try {
@@ -23,12 +23,12 @@ export const uploadAvatarRoute = new Hono<HonoEnv>()
         return c.json({ error: 'Missing filename or contentType' }, 400)
       }
 
-      const key = `avatars/${Date.now()}-${filename}`
+      const key = `bookclub-images/${Date.now()}-${filename}`
 
       const command = new PutObjectCommand({
         Bucket: bucket,
         Key: key,
-        ContentType: contentType,
+        ContentType: contentType
       })
 
       const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 })
@@ -41,4 +41,4 @@ export const uploadAvatarRoute = new Hono<HonoEnv>()
     }
   })
 
-export default uploadAvatarRoute
+export default uploadBCAvatarRoute;
