@@ -55,7 +55,7 @@ function SignUpComponent() {
       let avatarUrl: string | null = null;
 
       if (avatar) {
-        const res = await fetch('/api/upload-avatar', {
+        const res = await fetch('/api/s3/upload-avatar', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ filename: avatar.name, contentType: avatar.type })

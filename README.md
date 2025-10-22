@@ -35,6 +35,16 @@ Bookclub
 - [ ] Invite users for private clubs
 - [ ] Owner/Admin can accept/decline public users
 - [ ] Owner/admin settings for bookclubs
+- [ ] Member suggestion/voting system
+- [ ] Update current book page (percentage)
+- [ ] Status updates
+- [ ] Book "wishlist" 
+- [ ] Bookclub report (like Spotify wrapped)
+
+Book (Global table)
+- [ ] Book rating system (global book table)
+- [ ] Book spice rating
+- [ ] Written reviews for books
 
 Calendar
 - [ ] Simple calendar system for setting bookclub reading goals (ex: page 230 by 12/12/25)
